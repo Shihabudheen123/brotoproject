@@ -1,0 +1,129 @@
+<%- include("../layouts/adminHeader") %>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+
+<section class="content-main">
+    <div class="content-header">
+        <h2 class="content-title">User Management</h2>
+    </div>
+
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Search..." class="form-control" id="userSearch">
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select" id="statusFilter">
+                        <option value="all">Status</option>
+                        <option value="active">Active</option>
+                        <option value="blocked">Blocked</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select" id="itemsPerPage">
+                        <option value="20">Show 20</option>
+                        <option value="30">Show 30</option>
+                        <option value="40">Show 40</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <div id="user-management" class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">User ID</th>
+                            <th scope="col">User Name</th>
+                            <th scope="col">User Email</th>
+                            <th scope="col">User Mobile Number</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (users.length > 0) { %>
+                            <% users.forEach(user => { %>
+                                <tr>
+                                    <td><a href="#" class="fw-bold"><%= user._id %></a></td>
+                                    <td><%= user.name %></td>
+                                    <td><%= user.email %></td>
+                                    <td><%= user.mobile %></td>
+                                    <td>
+                                        <span class="user-status badge <%= user.is_blocked ? 'alert-danger' : 'alert-success' %>">
+                                            <%= user.is_blocked ? 'Blocked' : 'Active' %>
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="#" class="user-block-btn btn btn-xs btn-brand rounded font-sm" data-user-id="<%= user._id %>" data-block-status="<%= user.is_blocked ? 'unblock' : 'block' %>">
+                                            <%= user.is_blocked ? 'Unblock' : 'Block' %>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="6" class="text-center">No users found</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                    </table>
+                    </div>
+                    
+                    <div class="pagination-area mt-15 mb-50">
+                        <!-- Pagination implementation here -->
+                    </div>
+                    </div>
+                    </div>
+                    </section>
+                    
+                    <div class="modal fade" id="blockConfirmationModal" tabindex="-1" aria-labelledby="blockConfirmationModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="blockConfirmationModalLabel">Confirmation</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p id="confirmationMessage">Are you sure you want to block this user?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <a href="#" class="btn btn-danger confirm-block-btn">Block</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <%- include("../layouts/adminFooter") -%>
+                 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.user-block-btn').forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                const userId = this.dataset.userId;
+                const blockStatus = this.dataset.blockStatus;
+
+                console.log(`Attempting to ${blockStatus} user with ID: ${userId}`);  // Debug log
+
+                fetch(`/admin/users/${blockStatus}/${userId}`, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log(`User ${userId} successfully ${blockStatus}ed`);  // Debug log
+                            window.location.reload();
+                        } else {
+                            console.error(`Failed to ${blockStatus} user ${userId}:`, data.message);  // Debug log
+                            alert(`Failed to ${blockStatus} user: ${data.message}`);
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`Error during ${blockStatus} request:`, error);  // Debug log
+                        alert(`An error occurred: ${error.message}`);
+                    });
+            });
+        });
+    });
+</script>

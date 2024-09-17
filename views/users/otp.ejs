@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 28px;
+        }
+
+        .otp-input {
+            display: inline-block;
+            width: 70px;
+            height: 70px;
+            margin: 10px;
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            font-size: 32px;
+            text-align: center;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        button[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #1abc9c; /* Changed button color */
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background-color 0.3s ease;
+            font-size: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button[type="submit"]:hover {
+            background-color: #16a085; /* Changed hover color */
+        }
+
+        .instructions {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .instructions span {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .info-text {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #888;
+        }
+
+        .info-text a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .info-text a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        #otpTimer {
+            font-size: 16px;
+            color: #777;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Enter OTP</h1>
+        <form action="/Otp" method="POST">
+            <div class="otp-input-group">
+                <!-- <input class="otp-input" type="text" maxlength="1" name="digit1" oninput="moveToNext(this, 'digit2')" required>
+                <input class="otp-input" type="text" maxlength="1" name="digit2" oninput="moveToNext(this, 'digit3')" required>
+                <input class="otp-input" type="text" maxlength="1" name="digit3" oninput="moveToNext(this, 'digit4')" required>
+                <input class="otp-input" type="text" maxlength="1" name="digit4" oninput="moveToNext(this, 'digit5')" required>
+                <input class="otp-input" type="text" maxlength="1" name="digit5" oninput="moveToNext(this, 'digit6')" required>
+                <input class="otp-input" type="text" maxlength="1" name="digit6" required> -->
+                <input type="text" name="formOtp">
+            </div>
+            <button type="submit">Verify OTP</button>
+        </form>
+        <div class="instructions">Enter the <span>6-digit OTP</span> sent to your email address</div>
+        <div class="info-text">Didn't receive OTP? <span id="otpTimer">Resend OTP in <span id="timer">30</span> seconds</span></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const timerElement = document.getElementById('timer');
+            let seconds = 30;
+
+            function updateTimer() {
+                timerElement.innerText = seconds;
+            }
+
+            function startTimer() {
+                updateTimer();
+                const timerInterval = setInterval(function () {
+                    seconds--;
+                    updateTimer();
+
+                    if (seconds === 0) {
+                        clearInterval(timerInterval);
+                        document.getElementById('otpTimer').innerHTML = '<a href="#">Resend OTP</a>';
+                    }
+                }, 1000);
+            }
+
+            // Start the timer when the page loads
+            startTimer();
+        });
+
+        function moveToNext(currentInput, nextInputName) {
+            if (currentInput.value.length === 1) {
+                document.getElementsByName(nextInputName)[0].focus();
+            }
+        }
+    </script>
+</body>
+
+</html>
